@@ -1,16 +1,11 @@
 package command;
 
-import serialize.JsonSerializier;
-import serialize.Serializier;
-
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by wangye on 17/12/7.
  */
-public class RpcRequest {
+public class RpcRequest implements Serializable{
     private String interfaceFullName;
     private String methodName;
 

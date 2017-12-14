@@ -63,7 +63,7 @@ public class NettyClient {
         resultMap.get(channel).put(opaque, rpcResponse);
         channel.writeAndFlush(rpcRequest);
         rpcResponse.wait(NettyClientConfig.WAIT_RESPONSE_TIME_OUT);
-        if (rpcResponse.getData() == null) {
+        if (rpcResponse.isOk() == false) {
             throw new RuntimeException("请求超时");
         }
         return rpcResponse.getData();

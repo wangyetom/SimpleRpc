@@ -12,7 +12,7 @@ public class RpcResponse {
 
     private CountDownLatch countDownLatch = new CountDownLatch(1);
 
-
+    private boolean ok = false;
 
     public void setData(Object data) {
         this.data = data;
@@ -31,7 +31,9 @@ public class RpcResponse {
     }
 
     public void done(Object data) {
+
         this.data = (Object) data;
+        ok = true;
         countDownLatch.countDown();
     }
 
@@ -39,4 +41,10 @@ public class RpcResponse {
 
         return data;
     }
+
+    public boolean isOk() {
+        return ok;
+    }
+
+
 }

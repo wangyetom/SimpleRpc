@@ -1,6 +1,7 @@
 package test;
 
 import proxy.ClientProxy;
+import registry.ServerAddr;
 import remoting.NettyClient;
 
 /**
@@ -8,10 +9,9 @@ import remoting.NettyClient;
  */
 public class TestClient {
     public static void main(String[] args) {
-        NettyClient nettyClient = new NettyClient();
-        nettyClient.start();
-        ClientProxy clientProxy = new ClientProxy(nettyClient);
-        TestInterface rpcProxy = clientProxy.createRpcProxy(TestInterface.class, "127.0.0.1", 3462);
+
+        ClientProxy clientProxy = new ClientProxy(new  ServerAddr("172.31.32.177", 3463));
+        TestInterface rpcProxy = clientProxy.createRpcProxy(TestInterface.class);
         System.out.println(rpcProxy.helloWorld("tom"));
     }
 }

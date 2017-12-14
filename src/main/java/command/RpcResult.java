@@ -1,9 +1,11 @@
 package command;
 
+import java.io.Serializable;
+
 /**
  * Created by wangye on 17/12/7.
  */
-public class RpcResult {
+public class RpcResult  implements Serializable {
     private int opaque;
     private Object result;
 

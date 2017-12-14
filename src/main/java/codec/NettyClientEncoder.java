@@ -4,14 +4,14 @@ import command.RpcRequest;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import serialize.JsonSerializier;
+import serialize.JavaSerializier;
 import serialize.Serializier;
 
 /**
  * Created by wangye on 17/12/7.
  */
 public class NettyClientEncoder extends MessageToByteEncoder<RpcRequest> {
-    private Serializier serializier = new JsonSerializier();
+    private Serializier serializier = new JavaSerializier();
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, RpcRequest rpcRequest, ByteBuf byteBuf) throws Exception {

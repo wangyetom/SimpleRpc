@@ -1,7 +1,6 @@
 package remoting;
 
 import codec.NettyDecoder;
-import codec.NettyClientEncoder;
 import codec.NettyServerEncoder;
 import command.RpcRequest;
 import command.RpcResult;
@@ -11,9 +10,14 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import registry.Registry;
+import registry.RegistryFactory;
+import registry.ServerAddr;
 import util.ClassUtils;
 
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -29,6 +33,8 @@ public class NettyServer {
     private ExecutorService businessExecutor = Executors.newFixedThreadPool(50);
     private ServerBootstrap serverBootstrap;
 
+    private ConcurrentMap<String, Object> classCache = new ConcurrentHashMap<String, Object>();
+    //需要注册的就填第二个参数
     public NettyServer(int port) {
         parentEventLoopGroup = new NioEventLoopGroup(1);
         childEventLoopGroup = new NioEventLoopGroup(8);
@@ -55,12 +61,11 @@ public class NettyServer {
         });
         serverBootstrap.bind(port);
 
-
     }
 
     @ChannelHandler.Sharable
     class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
-        private ConcurrentMap<String, Object> classCache = new ConcurrentHashMap<String, Object>();
+
 
         @Override
         protected void channelRead0(final ChannelHandlerContext channelHandlerContext, final RpcRequest rpcRequest) throws Exception {
@@ -71,6 +76,7 @@ public class NettyServer {
                 String interfaceFullName = rpcRequest.getInterfaceFullName();
                 Object implementObject;
                 implementObject = findImplementsObject(interfaceFullName);
+
                 Method method = implementObject.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
                 if (method == null) {
                     throw new Exception("方法不存在！");

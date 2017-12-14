@@ -66,7 +66,7 @@ public class ClassUtils {
 
 // 从一个包中查找出所有的类，在jar包中不能查找
 
-    private static List getClasses(String packageName)
+    public static List getClasses(String packageName)
 
             throws ClassNotFoundException, IOException {
 

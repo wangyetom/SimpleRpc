@@ -1,6 +1,11 @@
 package proxy;
 
 import command.RpcRequest;
+import loadbalance.LoadBalance;
+import loadbalance.RandRobinLoadBalance;
+import registry.Registry;
+import registry.RegistryFactory;
+import registry.ServerAddr;
 import remoting.NettyClient;
 
 import java.lang.reflect.InvocationHandler;
@@ -12,29 +17,32 @@ import java.lang.reflect.Proxy;
  */
 public class ClientProxy {
     private NettyClient nettyClient;
+    private Registry registry;
+    private LoadBalance loadBalance;
 
-    public ClientProxy(NettyClient nettyClient) {
-        this.nettyClient = nettyClient;
+    public ClientProxy(ServerAddr registryAddr) {
+        nettyClient = new NettyClient();
+        nettyClient.start();
+        this.registry = RegistryFactory.getRegistry(registryAddr);
+        this.loadBalance = new RandRobinLoadBalance(registry);
     }
 
-    public <T> T createRpcProxy(Class<T> interfaceClass, String remoteIp, int remotePort) {
+    public <T> T createRpcProxy(Class<T> interfaceClass) {
         if (interfaceClass == null) {
             throw new RuntimeException("请求的类不存在");
         }
-        T t = (T) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{interfaceClass}, new RpcInvocationHandler(interfaceClass, remoteIp, remotePort));
+        T t = (T) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{interfaceClass}, new RpcInvocationHandler(interfaceClass));
         return t;
 
     }
 
     class RpcInvocationHandler implements InvocationHandler {
         private Class interfaceClass;
-        private String remoteIp;
-        private int remotePort;
 
-        public RpcInvocationHandler(Class interfaceClass, String remoteIp, int remotePort) {
+
+        public RpcInvocationHandler(Class interfaceClass) {
             this.interfaceClass = interfaceClass;
-            this.remoteIp = remoteIp;
-            this.remotePort = remotePort;
+
         }
 
         @Override
@@ -43,8 +51,13 @@ public class ClientProxy {
             rpcRequest.setInterfaceFullName(interfaceClass.getName());
             rpcRequest.setMethodName(method.getName());
             rpcRequest.setParams(args);
-            rpcRequest.setRemoteIp(remoteIp);
-            rpcRequest.setRemotePort(remotePort);
+            ServerAddr server = loadBalance.findServer(interfaceClass.getName());
+            if (server != null) {
+                rpcRequest.setRemoteIp(server.getIp());
+                rpcRequest.setRemotePort(server.getPort());
+            } else {
+                throw new RuntimeException("服务不存在");
+            }
             rpcRequest.setParamTypes(method.getParameterTypes());
             Object result = nettyClient.invokeSync(rpcRequest);
             return result;

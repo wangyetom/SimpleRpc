@@ -19,10 +19,8 @@ package codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import serialize.JsonSerializier;
+import serialize.JavaSerializier;
 import serialize.Serializier;
-
-import java.nio.ByteBuffer;
 
 public class NettyDecoder extends LengthFieldBasedFrameDecoder {
 
@@ -34,7 +32,7 @@ public class NettyDecoder extends LengthFieldBasedFrameDecoder {
         this.jsonType = jsonType;
     }
 
-    private Serializier serializier = new JsonSerializier();
+    private Serializier serializier = new JavaSerializier();
 
     @Override
     public Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
