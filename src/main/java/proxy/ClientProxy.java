@@ -22,8 +22,8 @@ public class ClientProxy {
 
     public ClientProxy(ServerAddr registryAddr) {
         nettyClient = new NettyClient();
-        nettyClient.start();
-        this.registry = RegistryFactory.getRegistry(registryAddr);
+
+        this.registry = RegistryFactory.getRegistry(registryAddr,nettyClient);
         this.loadBalance = new RandRobinLoadBalance(registry);
     }
 

@@ -29,9 +29,6 @@ public class NettyClient {
     public NettyClient() {
         eventLoopGroup = new NioEventLoopGroup(8);
         bootstrap = new Bootstrap();
-    }
-
-    public void start() {
         bootstrap.group(eventLoopGroup)
                 .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, NettyClientConfig.CONNECT_TIME_OUT)
@@ -49,6 +46,8 @@ public class NettyClient {
                     }
                 });
     }
+
+
 
     public Object invokeSync(RpcRequest rpcRequest) throws InterruptedException {
         String remoteIp = rpcRequest.getRemoteIp();

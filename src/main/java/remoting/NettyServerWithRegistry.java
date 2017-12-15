@@ -30,7 +30,7 @@ public class NettyServerWithRegistry extends NettyServer {
 
 
         if (registryAddr != null) {
-            registry = RegistryFactory.getRegistry(registryAddr);
+            registry = RegistryFactory.getRegistry(registryAddr,new NettyClient());
         }
         registerServices();
     }

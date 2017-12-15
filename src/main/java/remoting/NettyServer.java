@@ -28,12 +28,12 @@ import java.util.concurrent.Executors;
  * Created by wangye on 17/12/7.
  */
 public class NettyServer {
-    private EventLoopGroup parentEventLoopGroup;
-    private EventLoopGroup childEventLoopGroup;
-    private ExecutorService businessExecutor = Executors.newFixedThreadPool(50);
-    private ServerBootstrap serverBootstrap;
+    protected EventLoopGroup parentEventLoopGroup;
+    protected EventLoopGroup childEventLoopGroup;
+    protected ExecutorService businessExecutor = Executors.newFixedThreadPool(50);
+    protected ServerBootstrap serverBootstrap;
 
-    private ConcurrentMap<String, Object> classCache = new ConcurrentHashMap<String, Object>();
+    protected ConcurrentMap<String, Object> classCache = new ConcurrentHashMap<String, Object>();
     //需要注册的就填第二个参数
     public NettyServer(int port) {
         parentEventLoopGroup = new NioEventLoopGroup(1);
@@ -64,7 +64,7 @@ public class NettyServer {
     }
 
     @ChannelHandler.Sharable
-    class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
+    protected class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
 
         @Override
@@ -94,7 +94,7 @@ public class NettyServer {
 
         }
 
-        private Object findImplementsObject(String interfaceFullName) throws Exception {
+        protected Object findImplementsObject(String interfaceFullName) throws Exception {
             Object implementsClass;
             synchronized (classCache) {
                 implementsClass = classCache.get(interfaceFullName);
